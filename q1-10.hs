@@ -1,6 +1,3 @@
--- http://www.haskell.org/haskellwiki/99_questions/1_to_10
--- Just mucking around here learning a bit of Haskell and mostly ignoring error handling
-
 import Data.List
 import Control.Applicative
 import Control.Monad
@@ -121,7 +118,7 @@ compress''''' x = map head $ group x
 compress'''''' x = foldr (\a b -> if a == (head b) then b else a:b) [last x] x
 
 
--- 8.) Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they should be placed in separate sublists.
+-- 9.) Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they should be placed in separate sublists.
 -- pack ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e']
 -- 		["aaaa","b","cc","aa","d","eeee"]
 pack' :: (Eq a) => [a] -> [[a]]
@@ -135,6 +132,13 @@ pack'' [x] = [[x]]
 pack'' (x:xs) = if x `elem` (head (pack'' xs)) then (x:(head (pack'' xs))):(tail (pack'' xs)) else [x]:(pack'' xs)
 
 
+-- 10.) Run-length encoding of a list. Use the result of problem P09 to implement the so-called run-length encoding data compression method. Consecutive duplicates of elements are encoded as lists (N E) where N is the number of duplicates of the element E.
+-- encode "aaaabccaadeeee"
+-- [(4,'a'),(1,'b'),(2,'c'),(2,'a'),(1,'d'),(4,'e')]
+encode' :: (Eq a) => [a] -> [(Int, a)]
+encode' = map (\x -> (length x, head x)). pack'
+
+-- TODO: More
 		  
 main = do
   
