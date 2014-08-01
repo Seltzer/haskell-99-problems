@@ -26,7 +26,16 @@ assertExceptionOfType ex action =
 	where isWanted = guard . (== ex)
 
 	
+-- This doesn't seem to work
 instance Eq ErrorCall where
     x == y = (show x) == (show y)
-	
+		
 assertError ex f = assertExceptionOfType (ErrorCall ex) $ evaluate f
+
+
+assertErrorCall :: String -> IO a -> IO ()
+assertErrorCall desiredErrorMessage action
+    = handleJust isWanted (const $ return ()) $ do
+        action
+        assertFailure $ "Expected exception: " ++ desiredErrorMessage
+  where isWanted (ErrorCall actualErrorMessage) = guard $ actualErrorMessage == desiredErrorMessage

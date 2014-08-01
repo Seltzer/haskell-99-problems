@@ -38,10 +38,11 @@ penultimate''''' 	= (!! 1) . head . bunch 2 . reverse
 	
 -- 3.) Find the K'th element of a list. The first element in the list is number 1.	
 kth :: Int -> [x] -> x
+kth _ [] 	 	= error $ show EmptyList
 kth 1 [x]		= x
 kth k (_:xs) 	= kth (k-1) xs
-kth _ [] 	 	= error $ show EmptyList
 kth _ _ 	 	= error $ show IndexOutOfRange
+
 
 kth' k = last . take (k - 1)
 kth'' k = head . drop (k - 1)
