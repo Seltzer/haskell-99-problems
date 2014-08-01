@@ -1,19 +1,22 @@
+module Q1To28 where
+
+
 import Data.List
 import Control.Applicative
 import Control.Monad
 import Data.Maybe
 
 -- 1.) Find the last element in a list
-last'' :: (Show x) => [x] -> x
-last'' [x] = x
-last'' (_:xs) = last'' xs
+last' :: (Show x) => [x] -> x
+last' [x] = x
+last' (_:xs) = last'' xs
 
-last''' = head . reverse
-last'''' = foldr1 (flip const) 
-last''''' = foldl1 (curry snd)
-last'''''' = foldr1 (flip $ curry fst)
-last''''''' = head . foldl1 (>>) . map (:[])
-last'''''''' x = x !! (length x - 1)
+last'' = head . reverse
+last''' = foldr1 (flip const) 
+last'''' = foldl1 (curry snd)
+last''''' = foldr1 (flip $ curry fst)
+last'''''' = head . foldl1 (>>) . map (:[])
+last''''''' x = x !! (length x - 1)
 
 
 -- 2.) Find penultimate item in list
@@ -140,6 +143,4 @@ encode' = map (\x -> (length x, head x)). pack'
 
 -- TODO: More
 		  
-main = do
-  
-  putStrLn ("oh hai")
+
