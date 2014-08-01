@@ -2,35 +2,59 @@ import Control.Exception
 import Control.Monad
 import Q1To28
 import Test.HUnit
-
-
-assertException :: (Exception e, Eq e) => e -> IO a -> IO ()
-assertException ex action =
-    handleJust isWanted (const $ return ()) $ do
-        action
-        assertFailure $ "Expected exception: "-- ++ show ex
-	where isWanted = guard . (== ex)
+import Core
 
 
 q1Test impl = TestCase $ 
 	do
---		assertException PatternMatchFail (evaluate $ impl [])
+		assertException . evaluate $ impl []
 		assertEqual "Singleton list" 1 (impl [1])
 		assertEqual "General test" 4 (impl [1, 2, 3, 4])
 
 q2Test impl = TestCase $ 
 	do
---		assertException PatternMatchFail (evaluate $ impl [])
-		--assertEqual "Singleton list" 1 (impl [1])
+		assertException . evaluate $ impl []
+		assertException . evaluate $ impl [1]
 		assertEqual "Two item list" 1 (impl [1, 2])
-		assertEqual "General test" 3 (impl [1, 2, 3, 4])
+		assertEqual "General" 3 (impl [1, 2, 3, 4])
 
+q3Test impl = TestCase $
+	do 
+		assertEqual "Singleton list" 1 $ impl 1 [1]
+		assertEqual "General" 4 $ impl 3 [1, 2, 4, 8]
+		
+kthTest = TestCase $ 
+	do
+		let empty = show EmptyList
+		let oor = show IndexOutOfRange
+						
+		assertError empty $ evaluate $ kth (-5) []
+		assertError empty $ evaluate $ kth (0) []
+		assertError empty $ evaluate $ kth (1) []
+		assertError oor $ evaluate $ kth (-5) [1, 2, 3, 4, 5]
+		assertError oor $ evaluate $ kth (-50) [1, 2, 3, 4, 5]
+		
+q4Test impl = TestCase $
+	do
+		assertEqual "Empty" 0 $ impl []
+		assertEqual "Singleton" 1 $ impl [1]
+		assertEqual "General" 3 $ impl [1, 2, 3]
+		
+q5Test impl = TestCase $
+	do
+		assertEqual "Empty" [] $ impl []
+		assertEqual "Singleton" [1] $ impl [1]
+		assertEqual "General" [3, 2, 1] $ impl [1, 2, 3]
 		
 		
--- Must be a better way of doing this
-q1Tests = map q1Test [last', last'', last''', last'''', last''''', last'''''', last''''''']
-q2Tests = map q2Test [penultimate, penultimate', penultimate'', penultimate''', penultimate'''', penultimate''''']
-
-main = runTestTT $ TestList $ concat [q1Tests, q2Tests]
-
+		
+main = do 
+	let doTests = runTestTT . TestList
+	
+	-- Must be a better way of doing this
+	doTests $ map q1Test [last', last'', last''', last'''', last''''', last'''''', last''''''']
+	doTests $ map q2Test [penultimate, penultimate', penultimate'', penultimate''', penultimate'''', penultimate''''']
+	doTests $ (kthTest:) $ map q3Test [kth', kth'', kth''']	
+	doTests $ map q4Test [length', length'', length''', length'''']
+	doTests $ map q5Test [reverse', reverse'']
 
