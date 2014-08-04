@@ -38,15 +38,14 @@ penultimate''''' 	= (!! 1) . head . bunch 2 . reverse
 	
 -- 3.) Find the K'th element of a list. The first element in the list is number 1.	
 kth :: Int -> [x] -> x
-kth _ [] 	 	= error $ show EmptyList
 kth 1 [x]		= x
-kth k (_:xs) 	= kth (k-1) xs
-kth _ _ 	 	= error $ show IndexOutOfRange
+kth k (_:xs)	= kth (k-1) xs
+kth _ _			= error $ show IndexOutOfRange
 
-
-kth' k = last . take (k - 1)
-kth'' k = head . drop (k - 1)
-kth''' k = last . head . dropWhile (\ l -> (length l) < k) . inits
+-- Lazy implementations without error handling
+kth' k 		= last . take (k)
+kth'' k 	= head . drop (k - 1)
+kth''' k 	= last . head . dropWhile (\ l -> (length l) < k) . inits
 
 			
 -- 4.) Find the number of elements of a list
@@ -55,7 +54,8 @@ length' (x:xs) = 1 + length' xs
 
 length'' = sum . map (const 1)
 length''' = foldl (\n _ -> n + 1) 0
-length'''' = fst . last . zip [1..]
+length'''' [] = 0
+length'''' xs = fst . last . zip [1..] $ xs
 
 
 -- 5.) Reverse a list
@@ -116,11 +116,15 @@ compress' (x:xs)
 compress'' [] = []
 compress'' (x:xs) = x : (compress'' $ dropWhile (== x) xs)
 
--- These two are variants of each other... zip x with its tail to produce a binary mask which indicates whether we should discard values
+-- compress''' and compress'''' are variants of each other... zip x with its tail to produce a binary mask which indicates whether we should discard values
 compress''' x = map fst $ filter snd $ zip x $ ((:) True) $ zipWith (/=) x (tail x)
+
+compress'''' [] = []
 compress'''' xs = (++ [last xs]) $ catMaybes $ zipWith (\a b -> if (a == b) then Nothing else Just a) xs (tail xs)
 
 compress''''' x = map head $ group x
+
+compress'''''' [] = []
 compress'''''' x = foldr (\a b -> if a == (head b) then b else a:b) [last x] x
 
 
