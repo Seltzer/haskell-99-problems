@@ -148,6 +148,29 @@ pack'' (x:xs) = if x `elem` (head (pack'' xs)) then (x:(head (pack'' xs))):(tail
 encode' :: (Eq a) => [a] -> [(Int, a)]
 encode' = map (\x -> (length x, head x)). pack'
 
--- TODO: More
-		  
+-- 11.) Modified run-length encoding
+-- (encodeModified '(a a a a b c c a a d e e e e))
+--		((4 'a') 'b' (2 'c') (2 'a') 'd' (4 'e'))
+data Item a = Single a | Multiple Int a
+    deriving (Show, Eq)
+	
+encodeModified :: Eq a => [a] -> [Item a]
+encodeModified = map convert . encode'
+    where
+      convert (1,x) = Single x
+      convert (n,x) = Multiple n x
+	
 
+-- 12.) Decode a run-length encoded list
+-- decodeModified [Multiple 4 'a',Single 'b',Multiple 2 'c', Multiple 2 'a',Single 'd',Multiple 4 'e']
+--	"aaaabccaadeeee"
+decode' :: Eq a => [Item a] -> [a]
+decode' [] 				= []
+decode' [Single a]		= [a]
+decode' [Multiple n a]	= replicate n a
+decode' (x:xs)		= (decode' [x]) ++ (decode' xs)
+		
+decode'' = foldl (\acc next -> acc ++ (decodeItem next)) []
+	where 
+		decodeItem (Single a) 		= [a]
+		decodeItem (Multiple n a)	= replicate n a

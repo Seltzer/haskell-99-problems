@@ -86,10 +86,26 @@ q10Test impl = TestCase $
 	do
 		assertEqual "Empty"	[] $ impl []
 		assertEqual "Singleton"	[(1, 'a')] $ impl ['a']
-		assertEqual "General 1" [(1, 'a'),(1, 'b'), (1, 'c', (1, 'a'), (1, 'd'), (1, 'e')] $ impl ['a', 'b', 'c', 'a', 'd', 'e']
-		assertEqual "General 2" [(4, 'a'),(1, 'b'), (2, 'c', (2, 'a'), (1, 'd'), (4, 'e')] $ impl ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e']
+		assertEqual "General 1" [(1, 'a'), (1, 'b'), (1, 'c'), (1, 'a'), (1, 'd'), (1, 'e')] $ impl ['a', 'b', 'c', 'a', 'd', 'e']
+		assertEqual "General 2" [(4, 'a'), (1, 'b'), (2, 'c'), (2, 'a'), (1, 'd'), (4, 'e')] $ impl ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e']
 		
-	
+q11Test impl = TestCase $
+	do
+		assertEqual "Empty"	[] $ impl []
+		assertEqual "Singleton"	[Single 'a'] $ impl ['a']
+		assertEqual "General 1" [Single 'a', Single 'b', Single 'c', Single 'a', Single 'd', Single 'e'] $ impl ['a', 'b', 'c', 'a', 'd', 'e']
+		assertEqual "General 2" [Multiple 4 'a', Single 'b', Multiple 2 'c', Multiple 2 'a', Single 'd', Multiple 4 'e'] 
+			$ impl ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e']
+
+-- TODO: Could instead inject flipped assertEqual into q11Test
+q12Test impl = TestCase $
+	do
+		assertEqual "Empty"	[] $ impl []
+		assertEqual "Singleton"	['a'] $ impl [Single 'a']
+		assertEqual "General 1" ['a', 'b', 'c', 'a', 'd', 'e'] $ impl [Single 'a', Single 'b', Single 'c', Single 'a', Single 'd', Single 'e'] 
+		assertEqual "General 2" ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e'] $ impl [Multiple 4 'a', Single 'b', Multiple 2 'c', Multiple 2 'a', Single 'd', Multiple 4 'e'] 
+
+			
 main = do 
 	let doTests = runTestTT . TestList
 
@@ -122,4 +138,11 @@ main = do
 	doTests $ map q9Test [pack', pack'']
 
 	putStrLn "Q10 Tests - encode"
-	doTests $ map q9Test [encode']
+	doTests $ map q10Test [encode']
+	
+	putStrLn "Q11 Tests - encodeModified"
+	doTests $ map q11Test [encodeModified]
+	
+	putStrLn "Q12 Tests - decode'"
+	doTests $ map q12Test [decode', decode'']
+
